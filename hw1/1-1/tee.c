@@ -49,7 +49,7 @@ int main(int argc, char **argv)
         errexit("Usage: %s -a file1 file2 | %s -a file1", argv[0], argv[0]);
 
     // open the dest file
-    if ((fd = open(argv[2], O_RDWR | O_APPEND)) == -1)
+    if ((fd = open(argv[2], O_RDWR | O_CREAT | O_APPEND)) == -1)
         errexit("Fail to open %s!", argv[2]);
 
     // open the input file
