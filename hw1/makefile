@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall
-TARGET = tee
+TARGET = tee 
 
 .PHONY: all
 .PHONY: clean
