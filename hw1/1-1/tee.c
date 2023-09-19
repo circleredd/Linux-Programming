@@ -39,6 +39,8 @@ int main(int argc, char **argv)
             errexit("Fail to Read!");
         }
     }
+    else
+        errexit("Usage: ./tee -a file1 < file2 | ./tee -a file1");
 
     if (close(fd) == -1)
         errexit("Fail to close!");
