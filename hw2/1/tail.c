@@ -14,24 +14,33 @@ int main(int argc, char **argv)
 	int opt, numLines = 10; // opt and number of tail lines we want to fetch, by default is 10
 	int fd;					// the opened file flag
 	int fileArgvIndex = 1;	// the argv index of the inputfile, by default is 1
-	long int numRead;		// number of char read from the file
-	char buf[1024];
+	long int numRead;		// number of char read from the file;
+	char *buf = malloc(4096 * sizeof(char));
 
-	if (argc != 2 && argc != 4)
-		errexit("Usage: %s filename or %s -n num filename", argv[0], argv[0]);
-
-	while ((opt = getopt(argc, argv, "n:")) != -1)
+	if (argc == 3 && atoi(argv[1]) * -1 > 0)
 	{
-		switch (opt)
+		numLines = atoi(argv[1]) * -1;
+		fileArgvIndex = 2;
+	}
+	else if (argc == 2 || argc == 4)
+	{
+		while ((opt = getopt(argc, argv, "n:")) != -1)
 		{
-		case 'n':
-			numLines = atoi(optarg); // convert the optarg from string to int
-			fileArgvIndex = 3;
-			break;
+			switch (opt)
+			{
+			case 'n':
+				numLines = atoi(optarg); // convert the optarg from string to int
+				fileArgvIndex = 3;
+				break;
 
-		default:
-			break;
+			default:
+				break;
+			}
 		}
+	}
+	else
+	{
+		errexit("Usage: %s filename or %s -n num filename or %s -num filename", argv[0], argv[0], argv[0]);
 	}
 
 	if ((fd = open(argv[fileArgvIndex], O_RDONLY)) == -1)
@@ -56,11 +65,16 @@ int main(int argc, char **argv)
 	}
 	cur = (cur == -1) ? 0 : cur;
 
-	if (write(STDOUT_FILENO, &buf[cur], numRead - cur) == -1)
+	if (write(STDOUT_FILENO, (buf + cur), numRead - cur) == -1)
 		errexit("Fail to write!");
 
 	if (close(fd) == -1)
 		errexit("Fail to close the file!");
 
+	free(buf);
+
 	return 0;
 }
+
+// printf("numLines: %d\n", numLines);
+// printf("cur: %ld\n", cur);
