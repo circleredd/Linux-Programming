@@ -40,7 +40,8 @@ void run_command(char **myArgv)
         /* Optional: display exit status.  (See wstat(5).)
          * Fill in code.
          */
-        printf("[Parent] Child's exit status is [%d]\n", WEXITSTATUS(stat));
+
+        // printf("[Parent] Child's exit status is [%d]\n", WEXITSTATUS(stat));
 
         return;
 
@@ -59,9 +60,8 @@ void run_command(char **myArgv)
             strcat(command, " ");
             count++;
         }
-
-        printf("%s\n", command);
         system(command);
+
         /* Handle error return from exec */
         exit(errno);
     }

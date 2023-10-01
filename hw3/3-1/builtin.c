@@ -23,7 +23,7 @@ static void bi_echo(char **argv)
 	// /* Fill in code. */
 	int line;
 	int count = 0;
-	if ((strcmp(argv[1], "-n") == 0) && isdigit(argv[2]))
+	if ((strcmp(argv[1], "-n") == 0) && isdigit(*argv[2]))
 	{
 		line = atoi(argv[2]);
 		printf("%s\n", argv[line + 2]);

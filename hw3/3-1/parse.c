@@ -36,7 +36,7 @@ char **parse(char *line)
 	 * Fill in code.
 	 */
 	newArgv = malloc(2 * sizeof(char *));
-	newArgv[0] = token;
+	newArgv[0] = strdup(token);
 
 	/* While there are more tokens...
 	 *
@@ -54,8 +54,8 @@ char **parse(char *line)
 		token = strtok(NULL, delim);
 		if (!token)
 			break;
-		newArgv = realloc(newArgv, (count + 1) * sizeof(char *));
-		newArgv[count++] = token;
+		newArgv = realloc(newArgv, (count + 2) * sizeof(char *));
+		newArgv[count++] = strdup(token);
 	}
 
 	/* Null terminate the array and return it.
@@ -79,7 +79,7 @@ char **parse(char *line)
 void free_argv(char **oldArgv)
 {
 
-	// int i = 0;
+	int i = 0;
 
 	/* Free each string hanging off the array.
 	 * Free the oldArgv array itself.
@@ -87,11 +87,11 @@ void free_argv(char **oldArgv)
 	 * Fill in code.
 	 */
 
-	// while (oldArgv[i])
-	// {
-	// 	free(oldArgv[i]);
-	// 	i++;
-	// }
+	while (oldArgv[i])
+	{
+		free(oldArgv[i]);
+		i++;
+	}
 
 	free(oldArgv);
 
