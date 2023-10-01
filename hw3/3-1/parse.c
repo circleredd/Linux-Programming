@@ -11,7 +11,6 @@
 /* Parse a commandline string into an argv array. */
 char **parse(char *line)
 {
-
 	static char delim[] = " \t\n"; /* SPACE or TAB or NL */
 	int count = 0;
 	char *token;
@@ -38,11 +37,11 @@ char **parse(char *line)
 	 */
 	newArgv = malloc(2 * sizeof(char *));
 	newArgv[0] = token;
-	newArgv[1] = NULL;
+
 	/* While there are more tokens...
 	 *
 	 *  - Get next token.
-	 *	- Resize array.
+	 *  - Resize array.
 	 *  - Give token its own memory, then install it.
 	 *
 	 * Fill in code.
@@ -55,20 +54,20 @@ char **parse(char *line)
 		token = strtok(NULL, delim);
 		if (!token)
 			break;
-		newArgv = realloc(newArgv, (count + 2) * sizeof(char *));
+		newArgv = realloc(newArgv, (count + 1) * sizeof(char *));
 		newArgv[count++] = token;
-	}
-	newArgv[count] = NULL;
-
-	for (int i = 0; i < count; i++)
-	{
-		printf("[%d] : %s\n", i, newArgv[i]);
 	}
 
 	/* Null terminate the array and return it.
 	 *
 	 * Fill in code.
 	 */
+	newArgv[count] = NULL;
+
+	for (int i = 0; i < count; i++)
+	{
+		printf("[%d] : %s\n", i, newArgv[i]);
+	}
 
 	return newArgv;
 }
@@ -80,7 +79,7 @@ char **parse(char *line)
 void free_argv(char **oldArgv)
 {
 
-	int i = 0;
+	// int i = 0;
 
 	/* Free each string hanging off the array.
 	 * Free the oldArgv array itself.
@@ -88,11 +87,12 @@ void free_argv(char **oldArgv)
 	 * Fill in code.
 	 */
 
-	// while (oldArgv[i] != NULL)
+	// while (oldArgv[i])
 	// {
 	// 	free(oldArgv[i]);
 	// 	i++;
 	// }
+
 	free(oldArgv);
 
 	return;

@@ -37,7 +37,6 @@ void run_command(char **myArgv)
          */
         if (!is_background(myArgv))
             wait(&stat);
-
         /* Optional: display exit status.  (See wstat(5).)
          * Fill in code.
          */
