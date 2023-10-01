@@ -35,7 +35,8 @@ void run_command(char **myArgv)
         /* Wait for child to terminate.
          * Fill in code.
          */
-        wait(&stat);
+        if (!is_background(myArgv))
+            wait(&stat);
 
         /* Optional: display exit status.  (See wstat(5).)
          * Fill in code.

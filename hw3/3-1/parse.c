@@ -36,9 +36,9 @@ char **parse(char *line)
 	 *
 	 * Fill in code.
 	 */
-	newArgv = malloc(1 * sizeof(char *));
+	newArgv = malloc(2 * sizeof(char *));
 	newArgv[0] = token;
-
+	newArgv[1] = NULL;
 	/* While there are more tokens...
 	 *
 	 *  - Get next token.
@@ -55,9 +55,10 @@ char **parse(char *line)
 		token = strtok(NULL, delim);
 		if (!token)
 			break;
-		newArgv = realloc(newArgv, (count + 1) * sizeof(char *));
+		newArgv = realloc(newArgv, (count + 2) * sizeof(char *));
 		newArgv[count++] = token;
 	}
+	newArgv[count] = NULL;
 
 	for (int i = 0; i < count; i++)
 	{
@@ -87,7 +88,7 @@ void free_argv(char **oldArgv)
 	 * Fill in code.
 	 */
 
-	// while (oldArgv[i] != NULL && i == 0)
+	// while (oldArgv[i] != NULL)
 	// {
 	// 	free(oldArgv[i]);
 	// 	i++;

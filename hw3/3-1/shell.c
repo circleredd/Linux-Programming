@@ -11,7 +11,7 @@
 int main()
 {
     char line[LONGLINE];
-    int i;
+    // int i;
     char **myArgv;
 
     fputs("myshell -> ", stdout);
