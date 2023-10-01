@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include "shell.h"
 #include <ctype.h>
+#include <string.h>
 
 /****************************************************************************/
 /* builtin function definitions                                             */
@@ -81,4 +82,5 @@ int is_builtin(char *cmd)
 int do_builtin(char **argv)
 {
 	this->do_it(argv);
+	return 0;
 }

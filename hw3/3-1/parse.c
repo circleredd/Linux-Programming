@@ -48,18 +48,18 @@ char **parse(char *line)
 	 * Fill in code.
 	 */
 
-	int tokenCount = 1;
+	count = 1;
 
 	while (token)
 	{
 		token = strtok(NULL, delim);
 		if (!token)
 			break;
-		newArgv = realloc(newArgv, (tokenCount + 1) * sizeof(char *));
-		newArgv[tokenCount++] = token;
+		newArgv = realloc(newArgv, (count + 1) * sizeof(char *));
+		newArgv[count++] = token;
 	}
 
-	for (int i = 0; i < tokenCount; i++)
+	for (int i = 0; i < count; i++)
 	{
 		printf("[%d] : %s\n", i, newArgv[i]);
 	}
@@ -87,11 +87,11 @@ void free_argv(char **oldArgv)
 	 * Fill in code.
 	 */
 
-	while (oldArgv[i])
-	{
-		free(i);
-		i++;
-	}
+	// while (oldArgv[i] != NULL && i == 0)
+	// {
+	// 	free(oldArgv[i]);
+	// 	i++;
+	// }
 	free(oldArgv);
 
 	return;
