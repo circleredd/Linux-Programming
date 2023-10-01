@@ -20,10 +20,22 @@
 static void bi_echo(char **argv)
 {
 	// /* Fill in code. */
+	int line;
+	if ((strcmp(argv[1], "-n") == 0) && isdigit(argv[2]))
+		;
+	{
+		line = atoi(argv[2]);
+		printf("%s\n", argv[line + 2]);
+	}
 
 	return;
 }
 /* Fill in code. */
+static void bi_exit(char **argv)
+{
+	exit(0);
+	return;
+}
 
 /****************************************************************************/
 /* lookup table                                                             */
@@ -36,10 +48,10 @@ static struct cmd
 } inbuilts[] = {
 
 	/* Fill in code. */
-	{"quit"},
-	{"exit"},
-	{"logout"},
-	{"bye"},
+	{"quit", bi_exit},
+	{"exit", bi_exit},
+	{"logout", bi_exit},
+	{"bye", bi_exit},
 	{"echo", bi_echo}, /* When "echo" is typed, bi_echo() executes.  */
 	{NULL, NULL}	   /* NULL terminated. */
 };

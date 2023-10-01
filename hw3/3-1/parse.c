@@ -59,8 +59,6 @@ char **parse(char *line)
 		newArgv[tokenCount++] = token;
 	}
 
-	printf("count: %d\n", tokenCount);
-
 	for (int i = 0; i < tokenCount; i++)
 	{
 		printf("[%d] : %s\n", i, newArgv[i]);
