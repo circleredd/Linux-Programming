@@ -30,6 +30,7 @@ static void bi_echo(char **argv)
 	}
 	else
 	{
+		count = 1;
 		while (argv[count])
 		{
 			printf("%s ", argv[count++]);

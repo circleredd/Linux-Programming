@@ -22,10 +22,12 @@ int is_background(char **myArgv)
 	int count = 0;
 	while (myArgv[count])
 	{
-		if (strcmp(myArgv[count++], "&") == 0)
+		if (strcmp(myArgv[count], "&") == 0)
 		{
+			// free(myArgv[count]);
 			return 1;
 		}
+		count++;
 	}
 	return 0;
 }

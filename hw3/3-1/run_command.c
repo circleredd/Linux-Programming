@@ -16,6 +16,8 @@ void run_command(char **myArgv)
 {
     pid_t pid;
     int stat;
+    int is_wait = !is_background(myArgv);
+
     /* Create a new child process.
      * Fill in code.
      */
@@ -35,7 +37,7 @@ void run_command(char **myArgv)
         /* Wait for child to terminate.
          * Fill in code.
          */
-        if (!is_background(myArgv))
+        if (is_wait)
             wait(&stat);
         /* Optional: display exit status.  (See wstat(5).)
          * Fill in code.
@@ -61,6 +63,7 @@ void run_command(char **myArgv)
             count++;
         }
         system(command);
+        // execvp(myArgv[0], myArgv);
 
         /* Handle error return from exec */
         exit(errno);
