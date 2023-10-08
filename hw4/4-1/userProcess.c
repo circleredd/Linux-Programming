@@ -49,20 +49,20 @@ int main(int argc, char **argv)
     }
 
     struct dirent *entry;
-    int fd;
+
     while ((entry = readdir(dir)) != NULL)
     {
         if (entry->d_type == 4 && atoi(entry->d_name) != 0) // DT_DIR = 4 && isNumber
         {
-            char statusPath[256];
+            char statusPath[512];
             snprintf(statusPath, sizeof(statusPath), "/proc/%s/status", entry->d_name);
             // printf("path:%s\n", statusPath);
 
             FILE *statusFile = fopen(statusPath, "r");
             if (statusFile != NULL)
             {
-                char line[256];
                 uid_t uid = 0;
+                char line[256];
                 char command[256] = "";
                 while (fgets(line, sizeof(line), statusFile))
                 {
