@@ -7,6 +7,7 @@
 void inspectFD(const char *filePath)
 {
 
+    // 打開/proc
     DIR *dir;
     if ((dir = opendir("/proc")) == NULL)
     {
@@ -16,13 +17,13 @@ void inspectFD(const char *filePath)
 
     struct dirent *entry, *fdEntry;
 
+    // 找出/proc裡面的所有process名稱
     while ((entry = readdir(dir)) != NULL)
     {
         if (entry->d_type == 4 && atoi(entry->d_name) != 0) // DT_DIR = 4 && isNumber
         {
             char fdPath[512];
             snprintf(fdPath, sizeof(fdPath), "/proc/%s/fd", entry->d_name);
-            // printf("fd: %s\n", fdPath);
             DIR *fdDir = opendir(fdPath);
             if (fdDir == NULL)
             {
@@ -31,6 +32,7 @@ void inspectFD(const char *filePath)
             }
 
             // traverse all folders in fd directory of processes
+            // 找到所有process的fd路徑
             while ((fdEntry = readdir(fdDir)) != NULL)
             {
                 // procDir->proc / 1 / fd
@@ -41,7 +43,6 @@ void inspectFD(const char *filePath)
                     char folderInFdPath[1024];
                     char targetPath[512];
                     snprintf(folderInFdPath, sizeof(folderInFdPath), "%s/%s", procDir, fdEntry->d_name);
-                    // printf("proc: %s, folderName: %s\n", procDir, folderInFdPath);
 
                     // 使用readlink取得file descriptor的target path
                     ssize_t targetSize = readlink(folderInFdPath, targetPath, sizeof(targetPath) - 1);
@@ -50,7 +51,6 @@ void inspectFD(const char *filePath)
                         targetPath[targetSize] = '\0';
                         if (strcmp(targetPath, filePath) == 0)
                         {
-                            // printf("File Descriptor %s points to: %s\n", entry->d_name, targetPath);
                             printf("PID: %s, FD: %s,  targetFile: %s\n", entry->d_name, fdEntry->d_name, targetPath);
                         }
                     }
@@ -68,11 +68,11 @@ int main(int argc, char *argv[])
 {
     if (argc != 2)
     {
-        fprintf(stderr, "Usage: %s <PID>\n", argv[0]);
+        fprintf(stderr, "Usage: sudo %s <PID>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
 
-    // Get absolute file path -> /home/username/Linux_Programming/hw4/4-3/.makefile.swp
+    // Get absolute file path -> /dev/null
     char *filePath = argv[1];
 
     inspectFD(filePath);

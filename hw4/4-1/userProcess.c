@@ -41,6 +41,7 @@ int main(int argc, char **argv)
     }
     uid_t userId = userIdFromName(argv[1]);
 
+    // 打開"/proc"目錄
     DIR *dir;
     if ((dir = opendir("/proc")) == NULL)
     {
@@ -50,20 +51,23 @@ int main(int argc, char **argv)
 
     struct dirent *entry;
 
+    // 在 "/proc" 中將所有dtype == DT_DIR 且名稱為數字的路徑找過一輪
     while ((entry = readdir(dir)) != NULL)
     {
         if (entry->d_type == 4 && atoi(entry->d_name) != 0) // DT_DIR = 4 && isNumber
         {
             char statusPath[512];
             snprintf(statusPath, sizeof(statusPath), "/proc/%s/status", entry->d_name);
-            // printf("path:%s\n", statusPath);
 
+            // 打開/proc/pid/status檔案
             FILE *statusFile = fopen(statusPath, "r");
             if (statusFile != NULL)
             {
                 uid_t uid = 0;
                 char line[256];
                 char command[256] = "";
+
+                // 讀出command及Uid並進行比對
                 while (fgets(line, sizeof(line), statusFile))
                 {
                     if (sscanf(line, "Uid: %u", &uid) == 1)

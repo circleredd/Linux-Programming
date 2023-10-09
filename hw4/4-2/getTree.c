@@ -47,6 +47,8 @@ struct ProcessNode *buildProcessTree(struct ProcessNode *root)
     }
 
     struct dirent *entry;
+
+    // 找出/proc底下的所有process id
     while ((entry = readdir(dir)) != NULL)
     {
         if (entry->d_type == 4 && atoi(entry->d_name) != 0) // DT_DIR = 4 && isNumber
@@ -54,15 +56,17 @@ struct ProcessNode *buildProcessTree(struct ProcessNode *root)
             char statusPath[256];
             snprintf(statusPath, sizeof(statusPath), "/proc/%s/status", entry->d_name);
 
+            // 打開所有process的status檔案
             FILE *statusFile = fopen(statusPath, "r");
             if (statusFile != NULL)
             {
                 int pid = atoi(entry->d_name);
-                // printf("%d\n", pid);
                 char command[256] = "";
                 char ppid[256] = "";
                 char line[1024];
                 int PPid;
+
+                // 抓出Name和ppid
                 while (fgets(line, sizeof(line), statusFile))
                 {
                     if (sscanf(line, "Name: %s", command) == 1)
@@ -75,8 +79,7 @@ struct ProcessNode *buildProcessTree(struct ProcessNode *root)
                         break;
                     }
                 }
-                // printf("pid: %d, command: %s, ppid: %s\n", pid, command, ppid);
-
+                // 為每個Process建立一個Node, 並且將其用tmpLink暫時串在一起
                 struct ProcessNode *node = createProcessNode(pid, PPid, command);
 
                 if (root == NULL)
@@ -96,6 +99,7 @@ struct ProcessNode *buildProcessTree(struct ProcessNode *root)
 
     closedir(dir);
 
+    // 將Node排序好
     sortNode(root);
     return root;
 }
@@ -110,10 +114,9 @@ void sortNode(struct ProcessNode *root)
     // traverse all Node
     for (cur = root; cur != NULL; cur = cur->tmpLink)
     {
-        // printf("pid: %d, ppid: %d, command: %s\n", cur->pid, cur->ppid, cur->command);
         int tmp_ppid = cur->ppid;
 
-        // 尋找符合ppid的父節點
+        // 尋找符合ppid的父節點並設定其parent和child指標，sibling則是指向同樣ppid的其他node
         for (find = root; find != NULL; find = find->tmpLink)
         {
             if (find->pid == tmp_ppid)
@@ -189,10 +192,6 @@ int main()
     {
         printf("Process Tree:\n");
         printProcessTree(root, 0);
-    }
-    else
-    {
-        printf("NULL\n");
     }
     return 0;
 }
