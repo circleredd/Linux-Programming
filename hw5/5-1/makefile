@@ -6,7 +6,7 @@ TARGET3 = printdir
 TARGET4 = mycat
 TARGET5 = pipe_ls
 
-.PHONY = all clean
+.PHONY: all clean
 
 all: $(TARGET1) $(TARGET2) $(TARGET3) $(TARGET4) $(TARGET5)
 
@@ -38,6 +38,6 @@ $(TARGET5): pipe_ls.c
 
 
 clean:
-	rm -f $(TARGET)
+	rm -f $(TARGET1) $(TARGET2) $(TARGET3) $(TARGET4) $(TARGET5) 	
 
 

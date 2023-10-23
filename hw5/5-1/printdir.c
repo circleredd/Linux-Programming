@@ -1,20 +1,45 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <limits.h>
+#include <errno.h>
 
 int main()
 {
-    char current_dir[256];
+    char *current_dir = NULL;
+    size_t size = 256; // 初始buffer大小
 
-    if (getcwd(current_dir, sizeof(current_dir)) != NULL)
+    while (1)
     {
-        printf("%s\n", current_dir);
+        current_dir = (char *)malloc(size);
+        // allocate 失敗
+        if (current_dir == NULL)
+        {
+            perror("malloc");
+            exit(EXIT_FAILURE);
+        }
+
+        if (getcwd(current_dir, size) != NULL)
+        {
+            printf("%s\n", current_dir);
+            free(current_dir);
+            break;
+        }
+        else
+        {
+            // 如果buffer不夠大，getcwd會回傳NULL並設定errno為ERANGE
+            if (errno == ERANGE)
+            {
+                free(current_dir);
+                size *= 2; // 增加buffer大小
+            }
+            else
+            {
+                perror("getcwd");
+                free(current_dir);
+                exit(EXIT_FAILURE);
+            }
+        }
     }
-    else
-    {
-        perror("getcwd");
-        return 1;
-    }
+
     return 0;
 }
