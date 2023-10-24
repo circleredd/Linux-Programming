@@ -3,6 +3,8 @@
  */
 
 #include <stdio.h>
+#include <string.h>
+
 #include "shell.h"
 
 /*
@@ -10,19 +12,28 @@
  * -1 if in an illegal position (first or last index in the array),
  * or 0 if not present.
  */
-int pipe_present(char ** myCurrentArgv) {
+int pipe_present(char **myCurrentArgv)
+{
 	int index = 0;
 
-  	/* Search through myCurrentArgv for a match on "|". */
+	/* Search through myCurrentArgv for a match on "|". */
 
-  	if /* At the beginning or at the end. */ {
-    	return -1;
-
-  	} else if /* Off the end. */ {
-    	return 0;
-
-  	} else {
-    	/* In the middle. */
-    	return index;
-  	}
+	while (myCurrentArgv[index] != NULL)
+	{
+		if (strcmp(myCurrentArgv[index], "|") == 0)
+		{
+			if (index == 0 || myCurrentArgv[index + 1] == NULL) /* At the beginning or at the end. */
+			{
+				return -1;
+			}
+			else
+			{
+				/* In the middle. */
+				return index;
+			}
+		}
+		index++;
+	}
+	// off the end
+	return 0;
 }
