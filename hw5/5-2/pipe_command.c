@@ -41,6 +41,8 @@ void pipe_and_exec(char **myArgv)
 		 *
 		 * Fill in code. */
 		// Terminate first half of vector.
+
+		// 如果指令中有pipe符號，將pipe前及後的切成兩段
 		left_argv = myArgv;
 		right_argv = &myArgv[pipe_argv_index + 1];
 		myArgv[pipe_argv_index] = NULL;
@@ -74,6 +76,8 @@ void pipe_and_exec(char **myArgv)
 			 * - Exec the left command.
 			 *
 			 * Fill in code. */
+
+			// 父程序負責寫入pipe，所以關閉讀取端，並執行pipe左邊的指令
 			close(pipefds[0]);
 
 			dup2(pipefds[1], STDOUT_FILENO);
@@ -93,6 +97,8 @@ void pipe_and_exec(char **myArgv)
 			 * - Exec command on right side of pipe and recursively deal with other pipes
 			 *
 			 * Fill in code. */
+
+			// 子程序負責讀取pipe，所以關閉寫入端，並執行pipe右邊的指令
 			close(pipefds[1]);
 			dup2(pipefds[0], STDIN_FILENO);
 			close(pipefds[0]);

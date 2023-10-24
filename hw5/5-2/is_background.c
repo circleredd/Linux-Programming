@@ -21,6 +21,7 @@ int is_background(char **myArgv)
 	char **index = myArgv;
 	while (*index != NULL)
 	{
+		// 檢查字串中有沒有&
 		if (strcmp(*index, "&") == 0)
 		{
 			return 1;

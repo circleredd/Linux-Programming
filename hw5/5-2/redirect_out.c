@@ -17,7 +17,7 @@ int redirect_out(char **myArgv)
 {
 	int i = 0;
 	int fd;
-	int is_found = 0;
+	int is_found = 0; // 是否找到>的flag
 
 	/* search forward for >
 	 * Fill in code. */
@@ -30,6 +30,8 @@ int redirect_out(char **myArgv)
 		}
 		i++;
 	}
+
+	// 沒找到>，直接return
 	if (!is_found)
 		return -1;
 
