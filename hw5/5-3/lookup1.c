@@ -6,26 +6,39 @@
 #include <string.h>
 #include "dict.h"
 
-int lookup(Dictrec * sought, const char * resource) {
+int lookup(Dictrec *sought, const char *resource)
+{
 	Dictrec dr;
-	static FILE * in;
+	static FILE *in;
 	static int first_time = 1;
 
-	if (first_time) { 
+	if (first_time)
+	{
 		first_time = 0;
 		/* open up the file
 		 *
 		 * Fill in code. */
+		in = fopen(resource, "r");
 	}
 
 	/* read from top of file, looking for match
 	 *
 	 * Fill in code. */
+
+	// 將指針指向開頭
 	rewind(in);
-	while(________) {
+
+	// 將file中的內容讀進dr
+	while (fread(&dr, sizeof(Dictrec), 1, in))
+	{
 		/* Fill in code. */
-		return FOUND;
+		if (strcmp(dr.word, sought->word) == 0)
+		{
+			strcpy(sought->text, dr.text);
+			return FOUND;
+		}
 	}
+	fclose(in);
 
 	return NOTFOUND;
 }
