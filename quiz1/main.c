@@ -30,9 +30,14 @@ int main(int argc, char *argv[])
     int n = atoi(argv[1]), k = atoi(argv[2]), data_num = atoi(argv[3]);
     int sum = 0;
     int fd;
-    caddr_t shared_data;
+    char *shared_data;
 
     data data[data_num];
+
+    // 初始化random seed
+    srand(time(NULL));
+
+    // 產生data
     generator(data, data_num);
 
     fd = open("mapfile", O_RDWR | O_CREAT | O_TRUNC, 0666);
@@ -42,7 +47,6 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    sleep(1);
     // 透過mmap傳送資料給多個child process
     shared_data = mmap(NULL, sizeof(data) * data_num, PROT_READ | PROT_WRITE, MAP_SHARED, fd, (off_t)0);
 
@@ -76,7 +80,7 @@ int main(int argc, char *argv[])
                 child_sum += shared_data[j];
             }
 
-            printf("Child process %d\n", pid);
+            printf("Child process %d: %d\n", i + 1, pid);
             printf("child sum = %d\n", child_sum);
             exit(0);
         default:
