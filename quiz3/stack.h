@@ -1,8 +1,23 @@
-#define STACK_SIZE 10 /* Define a small stack size to cause contention. */
+#include <pthread.h>
+
+#ifndef STACK_H
+#define STACK_H
+
+#define STACK_SIZE 3 /* Define a small stack size to cause contention. */
 
 /* Define the data structure shared between the threads. */
-static char buffer[STACK_SIZE]; /* Stack’s buffer */
-static int index = 0;           /* Stack’s index. */
+static int buffer[STACK_SIZE]; /* Stack’s buffer */
+static int index = 0;          /* Stack’s index. */
 
-void push(char oneChar);
-char pop();
+typedef struct
+{
+    int index;
+    int buffer[STACK_SIZE];
+    pthread_mutex_t sharedMutex;
+    pthread_cond_t sharedCond;
+} data;
+
+void push(data *globalStack, int oneInt);
+int pop(data *globalStack);
+
+#endif
