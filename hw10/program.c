@@ -28,13 +28,16 @@ void generator(Data *data, int data_num)
     }
     return;
 }
+
+
+
 void sig_handler_exit(int sig)
 {
-    int retval;
 
-    if (sig == SIGCHLD)
+    if (sig == SIGTERM)
     {
         printf("EXIT PID=%d\n", getpid());
+        exit(0);
     }
 }
 
@@ -116,7 +119,7 @@ int main(int argc, char *argv[])
     close(fd);
     close(fd2);
 
-    signal(SIGCHLD, sig_handler_exit);
+    signal(SIGTERM, sig_handler_exit);
     signal(SIGUSR1, sig_handler_data);
 
     for (int i = 0; i < N; i++)
@@ -157,63 +160,22 @@ int main(int argc, char *argv[])
 
         for (pid_t i = 0; i < N; i++)
         {
-            kill(pids[i], SIGUSR1);
-            usleep(R);
+            kill(pids[i], SIGUSR1);                        
         }
+        usleep(10*R);
+        
     }
 
-    // for (int i = 0; i < M; i++)
-    // {
-    //     int remain = M % B;
-    //     for (int j = 0; j < B; j++)
-    //     {
-    //         strcpy(addr[j].message, data[i].message);
-    //     }
-
-    //     if (i % B == 0 && i != 0)
-    //     {
-    //         for (pid_t i = 0; i < N; i++)
-    //         {
-    //             kill(pids[i], SIGUSR1);
-    //             usleep(1000);
-    //         }
-
-    //         sleep(1);
-    //     }
-    //     if (i + remain == M - 1)
-    //     {
-    //         shared_count[1] = remain;
-    //         for (pid_t i = 0; i < remain; i++)
-    //         {
-    //             kill(pids[i], SIGUSR1);
-    //             usleep(1000);
-    //         }
-
-    //         sleep(1);
-    //     }
-    // }
-
-    // sleep(1);
-    // // usleep(1000000);
-
-    // for (pid_t i = 0; i < N; i++)
-    // {
-    //     kill(pids[i], SIGUSR1);
-    //     usleep(1000);
-    // }
-
-    // sleep(1);
-
-    // for (pid_t i = 0; i < N; i++)
-    // {
-    //     kill(pids[i], SIGCHLD);
-    // }
-    // sleep(1);
+    int status;
     for (pid_t i = 0; i < N; i++)
     {
-        kill(pids[i], SIGCHLD);
+        // send a signal to child to end themslevs
+        kill(pids[i], SIGTERM);
+        waitpid(pids[i], &status, 0);
+        printf("Child %d is terminated\n", pids[i]);
     }
-    sleep(1);
+    
+
 
     int totalMessage = M * N;
     int receivedMessage = shared_count[0];
@@ -225,5 +187,6 @@ int main(int argc, char *argv[])
     // free
     munmap(addr, sizeof(Data) * B);
     munmap(shared_count, sizeof(int));
-    return 0;
+    exit(0);
+    // return 0;
 }
