@@ -29,8 +29,6 @@ void generator(Data *data, int data_num)
     return;
 }
 
-
-
 void sig_handler_exit(int sig)
 {
 
@@ -49,9 +47,10 @@ void sig_handler_data(int sig)
         int i = 0;
         int num_batch = shared_count[1];
         int count = 0;
+        int pid = getpid();
         for (i = 0; i < num_batch; i++)
         {
-            printf("%d -> Data: %s\n", getpid(), addr[i].message);
+            printf("%d -> Data: %s\n", pid, addr[i].message);
             count++;
         }
         shared_count[0] += count;
@@ -160,10 +159,11 @@ int main(int argc, char *argv[])
 
         for (pid_t i = 0; i < N; i++)
         {
-            kill(pids[i], SIGUSR1);                        
+            kill(pids[i], SIGUSR1);
+            usleep(10);
         }
-        usleep(10*R);
-        
+        usleep(10 * R);
+        printf("num_of_data: %d\n", num_of_data);
     }
 
     int status;
@@ -174,8 +174,6 @@ int main(int argc, char *argv[])
         waitpid(pids[i], &status, 0);
         printf("Child %d is terminated\n", pids[i]);
     }
-    
-
 
     int totalMessage = M * N;
     int receivedMessage = shared_count[0];
