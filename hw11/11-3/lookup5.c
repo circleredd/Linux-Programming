@@ -10,6 +10,8 @@
 #include <fcntl.h>
 #include <string.h>
 #include <sys/mman.h>
+#include <fcntl.h>	// for open
+#include <unistd.h> // for close
 
 #include "dict.h"
 
@@ -18,17 +20,20 @@
  * It compares a word with the word part of a Dictrec
  */
 
-int dict_cmp(const void *a,const void *b) {
-    return strcmp((char *)a,((Dictrec *)b)->word);
+int dict_cmp(const void *a, const void *b)
+{
+	return strcmp((char *)a, ((Dictrec *)b)->word);
 }
 
-int lookup(Dictrec * sought, const char * resource) {
-	static Dictrec * table;
+int lookup(Dictrec *sought, const char *resource)
+{
+	static Dictrec *table;
 	static int numrec;
-	Dictrec * found;
+	Dictrec *found;
 	static int first_time = 1;
 
-	if (first_time) {  /* table ends up pointing at mmap of file */
+	if (first_time)
+	{ /* table ends up pointing at mmap of file */
 		int fd;
 		long filsiz;
 
@@ -36,20 +41,30 @@ int lookup(Dictrec * sought, const char * resource) {
 
 		/* Open the dictionary.
 		 * Fill in code. */
+		if ((fd = open(resource, O_RDONLY)) == -1)
+			DIE("open dict");
 
 		/* Get record count for building the tree. */
-		filsiz = lseek(fd,0L,SEEK_END);
+		filsiz = lseek(fd, 0L, SEEK_END);
 		numrec = filsiz / sizeof(Dictrec);
 
 		/* mmap the data.
 		 * Fill in code. */
+		ftruncate(fd, filsiz); // set file size
+
+		if ((table = (Dictrec *)mmap(NULL, filsiz, PROT_READ, MAP_SHARED, fd, 0)) == MAP_FAILED)
+			DIE("mmap");
+
 		close(fd);
 	}
-    
+
 	/* search table using bsearch
 	 * Fill in code. */
-	if (found) {
-		strcpy(sought->text,found->text);
+	found = (Dictrec *)bsearch(sought->word, table, numrec, sizeof(Dictrec), dict_cmp);
+
+	if (found)
+	{
+		strcpy(sought->text, found->text);
 		return FOUND;
 	}
 
