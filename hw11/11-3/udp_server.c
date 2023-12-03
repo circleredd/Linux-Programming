@@ -18,7 +18,7 @@
 
 int main(int argc, char **argv)
 {
-	static struct sockaddr_in server, client;
+	static struct sockaddr_in server;
 	int sockfd, cd, siz;
 	Dictrec dr, *tryit = &dr;
 
@@ -47,12 +47,12 @@ int main(int argc, char **argv)
 	for (;;)
 	{ /* await client packet; respond immediately */
 
-		siz = sizeof(client); /* siz must be non-zero */
+		siz = sizeof(server); /* siz must be non-zero */
 
 		/* Wait for a request.
 		 * Fill in code. */
 
-		while (recvfrom(sockfd, tryit, sizeof(Dictrec), 0, (struct sockaddr *)&client, &siz) > 0)
+		while (recvfrom(sockfd, tryit, sizeof(Dictrec), 0, (struct sockaddr *)&server, &siz) > 0)
 		{
 			/* Lookup request and respond to user. */
 			switch (lookup(tryit, argv[1]))
@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 			case FOUND:
 				/* Send response.
 				 * Fill in code. */
-				if (sendto(sockfd, tryit, sizeof(Dictrec), 0, (struct sockaddr *)&client, sizeof(client)) == -1)
+				if (sendto(sockfd, tryit, sizeof(Dictrec), 0, (struct sockaddr *)&server, sizeof(server)) == -1)
 					DIE("sendto");
 				break;
 
@@ -68,7 +68,7 @@ int main(int argc, char **argv)
 				/* Send response.
 				 * Fill in code. */
 				strcpy(dr.text, "XXXX");
-				if (sendto(sockfd, tryit, sizeof(Dictrec), 0, (struct sockaddr *)&client, sizeof(client)) == -1)
+				if (sendto(sockfd, tryit, sizeof(Dictrec), 0, (struct sockaddr *)&server, sizeof(server)) == -1)
 					DIE("sendto");
 				break;
 
