@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 
 		/* Wait for a connection.
 		 * Fill in code. */
-		if (cd = accept(sd, (struct sockaddr *)&client, &len) == -1)
+		if ((cd = accept(sd, (struct sockaddr *)&client, &len)) == -1)
 		{
 			DIE("accept");
 			continue;
@@ -70,7 +70,7 @@ int main(int argc, char **argv)
 			close(sd); /* Rendezvous socket is for parent only. */
 			/* Get next request.
 			 * Fill in code. */
-			while (recv(cd, &tryit, sizeof(Dictrec), 0) > 0)
+			while ((n = recv(cd, &tryit, sizeof(Dictrec), 0)) > 0)
 			{
 				/* Lookup the word , handling the different cases appropriately */
 				switch (lookup(&tryit, argv[1]))
