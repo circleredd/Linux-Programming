@@ -1,14 +1,12 @@
-
+// #include "apue.h"
+// Manually include the C standard library.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
-#include <aio.h>
 #include <error.h>
-#include <sys/wait.h>
-#include <sys/mman.h>
-#include <fcntl.h>
+#include <aio.h>
 
 #define MAXLINE 4096 /* max line length */
 
@@ -19,98 +17,85 @@ int main(void)
 	int n, fd1[2], fd2[2];
 	pid_t pid;
 	char line[MAXLINE];
-	FILE *parent_out, *child_in;
-	char message;
-	// int fd;
-	// int *map;
 
 	if (signal(SIGPIPE, sig_pipe) == SIG_ERR)
-	{
 		perror("signal error");
-		exit(1);
-	}
 
 	if (pipe(fd1) < 0 || pipe(fd2) < 0)
 		perror("pipe error");
 
-	// fd = open("mapfile", O_RDWR | O_CREAT | O_TRUNC, 0666);
-	// if (ftruncate(fd, (off_t)sizeof(int)) == -1)
-	// {
-	// 	perror("ftruncate");
-	// 	exit(1);
-	// }
-	// map = (int *)mmap(NULL, sizeof(char), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-	// map[0] = 1;
-
-	switch (pid = fork())
+	if ((pid = fork()) < 0)
 	{
-	case -1:
 		perror("fork error");
-		break;
-	case 0:
-		/* child */
-		close(fd1[1]);
-		close(fd2[0]);
-		FILE *parent_in, *child_out;
-
-		parent_in = fdopen(fd1[0], "r");
-		child_out = fdopen(fd2[1], "w");
-		if (fread(&message, sizeof(char), 1, parent_in) != 1)
-		{
-			perror("child read error from pipe");
-			exit(1);
-		}
-
-		if (message == 'c')
-		{
-			printf("child read c\n");
-			message = 'p';
-			// map[0] = 0;
-		}
-		else
-			printf("WAIT_CHILD: incorrect data\n");
-		if (fwrite(&message, sizeof(char), 1, child_out) != 1)
-		{
-			perror("child write error to pipe");
-			exit(1);
-		}
-
-		exit(0);
-		break;
-
-	default:
-		/* parent */
+	}
+	else if (pid > 0)
+	{ /* parent */
 		close(fd1[0]);
 		close(fd2[1]);
+		FILE *parent_out, *parent_in;
 		parent_out = fdopen(fd1[1], "w");
-		child_in = fdopen(fd2[0], "r");
-		printf("please enter a character:\n");
-		char message2 = fgetc(stdin);
+		parent_in = fdopen(fd2[0], "r");
 
-		if (fwrite(&message2, sizeof(char), 1, parent_out) != 1)
+		while (fgets(line, MAXLINE, stdin) != NULL)
 		{
-			perror("parent write error to pipe");
-			exit(1);
+			n = strlen(line);
+
+			if (fwrite(line, sizeof(char), n, parent_out) != n)
+				perror("write error to pipe");
+
+			fflush(parent_out);
+
+			// if ((n = fread(line, sizeof(char), MAXLINE, parent_in)) < 0)
+			// 	perror("read error from pipe");
+			if (fgets(line, MAXLINE, parent_in) == NULL)
+			{
+				perror("read error from pipe");
+			}
+
+			if (n == 0)
+			{
+				perror("child closed pipe");
+				break;
+			}
+			line[n] = '\0'; /* null terminate */
+			if (fputs(line, stdout) == EOF)
+				perror("fputs error");
 		}
-		fclose(parent_out);
 
-		wait(NULL);
-		if (fread(&message, sizeof(char), 1, child_in) != 1)
-		{
-			perror("parent read error from pipe");
-			exit(1);
-		}
-
-		if (message == 'p')
-			printf("parent read p\n");
-		else
-			printf("WAIT_PARENT: incorrect data\n");
-
-		break;
+		if (ferror(stdin))
+			perror("fgets error on stdin");
+		exit(0);
 	}
+	else
+	{ /* child */
+		close(fd1[1]);
+		close(fd2[0]);
+		FILE *child_in, *child_out;
+		child_in = fdopen(fd1[0], "r");
+		child_out = fdopen(fd2[1], "w");
+		// close(fd1[0]);
+		// close(fd2[1]);
+
+		if (fd1[0] != STDIN_FILENO)
+		{
+			if (dup2(fileno(child_in), STDIN_FILENO) != STDIN_FILENO)
+				perror("dup2 error to stdin");
+		}
+
+		if (fd2[1] != STDOUT_FILENO)
+		{
+			if (dup2(fileno(child_out), STDOUT_FILENO) != STDOUT_FILENO)
+				perror("dup2 error to stdout");
+		}
+
+		if (execl("./add2", "add2", (char *)0) < 0)
+			perror("execl error");
+	}
+	exit(0);
 }
 
-static void sig_pipe(int signo)
+static void
+sig_pipe(int signo)
 {
 	printf("SIGPIPE caught\n");
 	exit(1);
