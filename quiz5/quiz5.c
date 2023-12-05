@@ -84,6 +84,7 @@ int main(void)
 		close(fd2[1]);
 		parent_out = fdopen(fd1[1], "w");
 		child_in = fdopen(fd2[0], "r");
+		printf("please enter a character:\n");
 		char message2 = fgetc(stdin);
 
 		if (fwrite(&message2, sizeof(char), 1, parent_out) != 1)
