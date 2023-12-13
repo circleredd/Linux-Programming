@@ -53,17 +53,7 @@ void run_command(char **myArgv)
          * Fill in code.
          */
 
-        int count = 0;
-        char command[128] = "";
-
-        while (myArgv[count])
-        {
-            strcat(command, myArgv[count]);
-            strcat(command, " ");
-            count++;
-        }
-        system(command);
-        // execvp(myArgv[0], myArgv);
+        execvp(myArgv[0], myArgv);
 
         /* Handle error return from exec */
         exit(errno);

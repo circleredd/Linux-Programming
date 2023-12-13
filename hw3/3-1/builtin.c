@@ -23,6 +23,12 @@ static void bi_echo(char **argv)
 	// /* Fill in code. */
 	int line;
 	int count = 0;
+	if (argv[1] == NULL)
+	{
+		printf("%s\n", argv[0]);
+		return;
+	}
+
 	if ((strcmp(argv[1], "-n") == 0) && isdigit(*argv[2]))
 	{
 		line = atoi(argv[2]);
@@ -30,7 +36,7 @@ static void bi_echo(char **argv)
 	}
 	else
 	{
-		count = 1;
+		count = 0;
 		while (argv[count])
 		{
 			printf("%s ", argv[count++]);
